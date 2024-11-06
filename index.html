@@ -34,6 +34,44 @@
 
 <body>
 
+<!-- Music -->
+   <div id="music-player-container">
+      <div id="music-title">Check out my music CV 👇</div>
+      <div id="music-player">
+          <audio id="audio-player" controls>
+              <source src="images/music/niko-the-code-sailor.mp3" type="audio/mp3">
+              Your browser does not support the audio element.
+          </audio>
+      </div>
+  </div>
+  
+  <style>
+      #music-player-container {
+          position: fixed;
+          top: 10px;
+          right: 10px;
+          z-index: 1000;
+      }
+      #music-title {
+         font-size: 14px;
+         color: white;
+         text-align: center;
+         margin-bottom: 10px;
+         margin-top: -5px;
+         background: rgba(0, 0, 0, 0.8);
+         padding: 3px;
+         border-radius: 5px;
+      }
+      #music-player {
+          background: rgba(0, 0, 0, 0.8);
+          padding: 10px;
+          border-radius: 8px;
+      }
+      #audio-player {
+          width: 280px;
+      }
+  </style>
+ <!-- Music -->
    <!-- Header
    ================================================== -->
    <header id="home">
