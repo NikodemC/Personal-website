@@ -1,0 +1,45 @@
+/**
+ * Copy sits directly on the 3D scene, which runs from midnight to sunset.
+ * Legibility comes from one full-screen veil whose strength follows the sky,
+ * plus a soft shadow on the type. Nothing here draws an edge.
+ */
+.veil {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: var(--veil-strength, 0.58);
+  background:
+    linear-gradient(
+      96deg,
+      rgba(4, 13, 26, 0.93) 0%,
+      rgba(4, 13, 26, 0.86) 16%,
+      rgba(4, 13, 26, 0.64) 36%,
+      rgba(4, 13, 26, 0.32) 57%,
+      rgba(4, 13, 26, 0.09) 78%,
+      rgba(4, 13, 26, 0) 100%
+    ),
+    linear-gradient(
+      to top,
+      rgba(4, 13, 26, 0.6) 0%,
+      rgba(4, 13, 26, 0.16) 26%,
+      rgba(4, 13, 26, 0) 54%
+    );
+  transition: opacity 500ms linear;
+}
+
+.readable {
+  position: relative;
+  text-shadow: 0 1px 16px rgba(3, 10, 20, 0.62);
+}
+
+@media (max-width: 720px) {
+  .veil {
+    background: linear-gradient(
+      180deg,
+      rgba(4, 13, 26, 0.52) 0%,
+      rgba(4, 13, 26, 0.7) 38%,
+      rgba(4, 13, 26, 0.74) 100%
+    );
+  }
+}

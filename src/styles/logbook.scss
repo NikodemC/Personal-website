@@ -1,0 +1,165 @@
+@use './tokens';
+
+.logbook {
+  &__head {
+    margin-bottom: clamp(2rem, 5vh, 4rem);
+  }
+
+  &__entries {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2rem, 5vh, 3.5rem);
+    max-width: 52rem;
+  }
+}
+
+.log-entry {
+  display: grid;
+  grid-template-columns: 11.5rem minmax(0, 1fr);
+  gap: clamp(1.25rem, 3vw, 2.25rem);
+  align-items: center;
+
+  &__photo {
+    position: relative;
+    overflow: hidden;
+    border-radius: 14px;
+    aspect-ratio: 3 / 4;
+    border: 1px solid rgba(207, 226, 234, 0.16);
+    box-shadow:
+      0 26px 50px -24px rgba(0, 0, 0, 0.85),
+      0 3px 10px rgba(2, 8, 18, 0.4);
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(4, 13, 26, 0.42), rgba(4, 13, 26, 0) 46%);
+      pointer-events: none;
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: saturate(0.88) contrast(1.04);
+      transition: transform 900ms var(--ease-out);
+    }
+  }
+
+  &:hover &__photo img {
+    transform: scale(1.045);
+  }
+
+  &__text {
+    h3 {
+      margin-bottom: 0.35rem;
+    }
+
+    p {
+      margin-bottom: 0.7rem;
+    }
+  }
+
+  &__link {
+    display: inline-block;
+    font-size: var(--text-small);
+    color: var(--color-brass-soft);
+  }
+}
+
+@media (max-width: 720px) {
+  .log-entry {
+    grid-template-columns: 1fr;
+
+    .log-entry__photo {
+      max-width: 12rem;
+    }
+  }
+}
+
+.crew {
+  &__head {
+    margin-bottom: clamp(2rem, 5vh, 3.5rem);
+  }
+
+  &__quotes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+    gap: clamp(1.5rem, 4vw, 3rem);
+  }
+
+  &__quote {
+    margin: 0;
+    padding-left: 1.4rem;
+    border-left: 1px solid var(--color-glass-edge);
+
+    p {
+      font-family: var(--font-display);
+      font-size: 1.125rem;
+      line-height: 1.55;
+      color: var(--color-shallows);
+    }
+
+    footer {
+      font-size: var(--text-small);
+      color: var(--color-mist);
+    }
+  }
+
+  &__motto {
+    margin: clamp(3rem, 8vh, 6rem) 0 0;
+    max-width: 34rem;
+
+    blockquote {
+      margin: 0 0 0.6rem;
+      font-family: var(--font-display);
+      font-size: var(--text-h3);
+      font-style: italic;
+      line-height: 1.3;
+    }
+  }
+}
+
+.contact {
+  min-height: 100svh;
+
+  &__inner {
+    max-width: 44rem;
+  }
+
+  &__headline {
+    font-size: var(--text-h2);
+    margin-bottom: 1.2rem;
+  }
+
+  &__mail {
+    margin: 2rem 0 1.6rem;
+    font-family: var(--font-display);
+    font-size: var(--text-h3);
+  }
+
+
+  &__socials {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.6rem;
+    margin: 0 0 3rem;
+    padding: 0;
+    font-size: var(--text-small);
+  }
+
+  &__colophon {
+    margin: 0;
+  }
+}
+
+/**
+ * `.section` is emitted after this file and sets justify-content, so a bare
+ * `.contact` loses the tie on source order. Naming both classes wins it back
+ * without touching the nested rules above.
+ */
+.section.contact {
+  justify-content: flex-end;
+  padding-bottom: clamp(2.5rem, 7vh, 5rem);
+}

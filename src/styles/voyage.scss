@@ -1,0 +1,106 @@
+@use './tokens';
+
+.voyage {
+  &__intro {
+    min-height: 70vh;
+  }
+
+  &__ports {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    counter-reset: port;
+  }
+
+  &__port {
+    min-height: 105vh;
+    align-items: flex-start;
+
+    &:nth-child(even) {
+      align-items: flex-end;
+    }
+  }
+}
+
+.port {
+  padding: clamp(1.5rem, 3vw, 2.4rem);
+  max-width: 34rem;
+
+  &__header {
+    margin-bottom: 1.2rem;
+  }
+
+  &__company {
+    margin-bottom: 0.35rem;
+  }
+
+  &__role {
+    margin: 0 0 0.3rem;
+    color: var(--color-shallows);
+  }
+
+  &__meta {
+    margin: 0;
+  }
+
+  &__summary {
+    margin-bottom: 1.4rem;
+  }
+
+  &__stack {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin: 0;
+    padding: 0;
+
+    li {
+      font-size: 0.8125rem;
+      padding: 0.28rem 0.65rem;
+      border: 1px solid var(--color-glass-edge);
+      border-radius: 999px;
+      color: var(--color-shallows);
+    }
+  }
+}
+
+.destination {
+  min-height: 120vh;
+  justify-content: center;
+
+  &__inner {
+    max-width: 56rem;
+  }
+
+  &__headline {
+    font-size: var(--text-h2);
+    margin: 1rem 0 2rem;
+    max-width: 20ch;
+    font-style: italic;
+    font-variation-settings: 'opsz' 120, 'SOFT' 40, 'WONK' 1;
+  }
+
+  &__role {
+    font-size: var(--text-lead);
+    color: var(--color-brass-soft);
+    margin-bottom: 1.4rem;
+  }
+
+  &__stack {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 2.4rem 0 0;
+    padding: 0;
+
+    li {
+      font-size: 0.8125rem;
+      padding: 0.3rem 0.7rem;
+      border-radius: 999px;
+      background: rgba(212, 166, 72, 0.12);
+      border: 1px solid rgba(212, 166, 72, 0.3);
+    }
+  }
+}
