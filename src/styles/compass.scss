@@ -1,0 +1,207 @@
+@use './tokens';
+
+.compass {
+  &__head {
+    margin-bottom: clamp(2rem, 5vh, 4rem);
+  }
+
+  &__body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: center;
+  }
+
+  &__rose {
+    position: relative;
+    aspect-ratio: 1;
+    max-width: 30rem;
+    width: 100%;
+    margin-inline: auto;
+  }
+
+  &__ring {
+    position: absolute;
+    inset: 12%;
+    border: 1px solid var(--color-glass-edge);
+    border-radius: 50%;
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 14%;
+      border: 1px solid var(--color-glass-edge);
+      border-radius: 50%;
+      opacity: 0.6;
+    }
+
+    &::after {
+      inset: 34%;
+      opacity: 0.4;
+    }
+  }
+
+  &__needle {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 2px;
+    height: 30%;
+    background: linear-gradient(to top, transparent, var(--color-brass));
+    transform-origin: bottom center;
+    transform: translate(-50%, -100%) rotate(var(--needle));
+    transition: transform 620ms var(--ease-out);
+  }
+
+  &__point {
+    position: absolute;
+    text-shadow: 0 1px 16px rgba(3, 10, 20, 0.72);
+    left: calc(50% + var(--x));
+    top: calc(50% + var(--y));
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.5rem 0.7rem;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    color: var(--color-mist);
+    transition:
+      color var(--duration) var(--ease-out),
+      border-color var(--duration) var(--ease-out);
+
+    &:hover,
+    &.is-active {
+      color: var(--color-foam);
+      border-color: var(--color-glass-edge);
+    }
+
+    &.is-active {
+      color: var(--color-brass-soft);
+    }
+  }
+
+  &__bearing {
+    font-family: var(--font-display);
+    font-size: 0.875rem;
+    letter-spacing: 0.08em;
+  }
+
+  &__label {
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+
+  &__panel {
+    padding: 0.4rem 0 0.4rem clamp(1.25rem, 2.5vw, 2rem);
+    border: 0;
+    border-left: 1px solid rgba(212, 166, 72, 0.55);
+    border-radius: 0;
+    background: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    text-shadow: 0 1px 16px rgba(3, 10, 20, 0.62);
+
+    h3 {
+      margin-bottom: 1rem;
+    }
+  }
+
+  &__items {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+
+    li {
+      font-size: 0.875rem;
+      padding: 0.3rem 0.75rem;
+      border: 1px solid rgba(207, 226, 234, 0.24);
+      border-radius: 999px;
+      background: rgba(5, 16, 32, 0.42);
+      color: var(--color-shallows);
+    }
+  }
+
+  &__languages {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2.5rem;
+    margin: clamp(2rem, 5vh, 3.5rem) 0 0;
+    padding: 0;
+
+    li {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+  }
+
+  &__language-name {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 860px) {
+  .compass__body {
+    grid-template-columns: 1fr;
+  }
+
+  .compass__rose {
+    max-width: 24rem;
+  }
+}
+
+/**
+ * A rose needs room for eight labels around a circle. On a phone there is none,
+ * and bearings alone say nothing, so the points become a plain list of chips.
+ */
+@media (max-width: 720px) {
+  .compass__rose {
+    position: static;
+    aspect-ratio: auto;
+    max-width: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .compass__ring,
+  .compass__needle {
+    display: none;
+  }
+
+  .compass__point {
+    position: static;
+    transform: none;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 0.45rem;
+    padding: 0.42rem 0.85rem;
+    border-radius: 999px;
+    border-color: rgba(207, 226, 234, 0.22);
+    background: rgba(5, 16, 32, 0.5);
+
+    &.is-active {
+      border-color: rgba(212, 166, 72, 0.6);
+      background: rgba(212, 166, 72, 0.14);
+    }
+  }
+
+  .compass__bearing {
+    font-size: 0.75rem;
+    color: var(--color-brass-soft);
+  }
+
+  .compass__label {
+    font-size: 0.8125rem;
+  }
+}

@@ -1,0 +1,31 @@
+:root {
+  --color-abyss: #061224;
+  --color-harbor: #0e2a47;
+  --color-harbor-soft: #173a5e;
+  --color-foam: #f2f5f7;
+  --color-shallows: #cfe2ea;
+  --color-mist: #a7bccc;
+  --color-brass: #d4a648;
+  --color-brass-soft: #e8c77a;
+  --color-dawn: #f08c5a;
+  --color-glass: rgba(5, 16, 32, 0.74);
+  --color-glass-edge: rgba(185, 214, 225, 0.2);
+
+  --font-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+  --font-body: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+
+  --text-body: 1.0625rem;
+  --text-small: 0.9375rem;
+  --text-lead: clamp(1.25rem, 1.05rem + 0.8vw, 1.625rem);
+  --text-h3: clamp(1.375rem, 1.15rem + 0.9vw, 1.875rem);
+  --text-h2: clamp(2.125rem, 1.4rem + 3vw, 3.75rem);
+  --text-display: clamp(3.25rem, 1rem + 11vw, 9.5rem);
+
+  --measure: 38rem;
+  --gutter: clamp(1.25rem, 6vw, 7rem);
+  --section-gap: clamp(6rem, 14vh, 12rem);
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration: 480ms;
+}
