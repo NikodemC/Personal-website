@@ -3,7 +3,7 @@ import { Canvas } from '@react-three/fiber';
 import { AdaptiveDpr, PerformanceMonitor } from '@react-three/drei';
 import { ACESFilmicToneMapping } from 'three';
 import { Boat } from './Boat';
-import { Buoys } from './Buoys';
+import { Rocks } from './Rocks';
 import { CameraRig } from './CameraRig';
 import { Creatures } from './Creatures';
 import { detectCapabilities } from './capabilities';
@@ -47,7 +47,7 @@ export const VoyageCanvas = () => {
           <Ocean />
           <Boat />
           {!degraded && <Wake />}
-          <Buoys />
+          <Rocks />
           {!degraded && <Creatures />}
           <Island />
           {!degraded && <Effects />}

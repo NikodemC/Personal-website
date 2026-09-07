@@ -1,4 +1,4 @@
-import { BufferAttribute, BufferGeometry, CatmullRomCurve3, Vector3 } from 'three';
+import { BufferAttribute, BufferGeometry, Vector3 } from 'three';
 
 export type SurfacePoint = (u: number, v: number, out: Vector3) => void;
 
@@ -74,33 +74,4 @@ export const mergeMirrored = (geometry: BufferGeometry): BufferGeometry => {
   }
   mirrored.computeVertexNormals();
   return mirrored;
-};
-
-/**
- * Revolves a profile around the Y axis. Each profile point is (radius, height);
- * the curve is resampled so corners stay smooth.
- */
-export const revolveProfile = (
-  profile: [number, number][],
-  radialSegments = 24,
-  profileSegments = 28,
-): BufferGeometry => {
-  const curve = new CatmullRomCurve3(
-    profile.map(([radius, height]) => new Vector3(radius, height, 0)),
-    false,
-    'catmullrom',
-    0.4,
-  );
-  const point = new Vector3();
-
-  return buildSurface(
-    radialSegments,
-    profileSegments,
-    (u, v, out) => {
-      curve.getPoint(v, point);
-      const angle = u * Math.PI * 2;
-      out.set(Math.cos(angle) * point.x, point.y, Math.sin(angle) * point.x);
-    },
-    true,
-  );
 };

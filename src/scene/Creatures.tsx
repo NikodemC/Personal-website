@@ -42,10 +42,10 @@ interface Sighting {
 
 const SIGHTINGS: Sighting[] = [
   { id: 'kraken-night', kind: 'kraken', at: 0.13, duration: 34, side: -78, ahead: 110 },
-  { id: 'dolphins-dawn', kind: 'dolphins', at: 0.23, duration: 6.5, side: 11, ahead: 4 },
+  { id: 'dolphins-dawn', kind: 'dolphins', at: 0.23, duration: 6.5, side: 19, ahead: 4 },
   /** Same spot on screen as before, pushed out along the camera ray toward the horizon. */
   { id: 'whale-landfall', kind: 'whale', at: 0.93, duration: 14, side: 9, ahead: 172, yaw: 2.14 },
-  { id: 'dolphins-run', kind: 'dolphins', at: 0.71, duration: 6.5, side: -12, ahead: 2 },
+  { id: 'dolphins-run', kind: 'dolphins', at: 0.71, duration: 6.5, side: -20, ahead: 2 },
 ];
 
 const POD = [

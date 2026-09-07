@@ -195,10 +195,10 @@ export const Boat = () => {
     const forestay = ropeGeometry(bowFitting, forestayTop);
     const backstay = ropeGeometry(sternFitting, backstayTop);
     /**
-     * A working sheet is taut, so it runs almost straight. Any real sag drops
-     * it through the coachroof, which is what the waypoint version was for.
+     * A working sheet is nearly straight, with just enough slack to read as
+     * rope. Measured against the coachroof: this leaves it well clear.
      */
-    const sheets = [1, -1].map((side) => ropeGeometry(jibClew, winchAt(side), 0.04));
+    const sheets = [1, -1].map((side) => ropeGeometry(jibClew, winchAt(side), 0.13));
     return {
       topsides,
       bottom,
