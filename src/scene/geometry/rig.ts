@@ -1,5 +1,5 @@
 import { CatmullRomCurve3, TubeGeometry, Vector3, type BufferGeometry } from 'three';
-import { HULL, stationSheer, stationZ } from './hull';
+import { stationSheer, stationZ } from './hull';
 
 const deckAt = (station: number) => new Vector3(0, stationSheer(station) + 0.1, stationZ(station));
 
@@ -31,12 +31,6 @@ export const jibTack = new Vector3(0, bowFitting.y + 0.12, bowFitting.z - 0.12);
 export const jibClew = new Vector3(0, boomTack.y - 0.15, mastBase.z + 0.55);
 
 export const backstayTop = new Vector3(0, mastHead.y - 0.1, mastHead.z);
-
-export const HULL_BOUNDS = {
-  bowZ: stationZ(1),
-  sternZ: stationZ(0),
-  beam: HULL.beam,
-};
 
 /**
  * The tail of a sheet, flaked down on deck: a flat spiral of two and a bit

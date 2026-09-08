@@ -16,6 +16,9 @@ useTexture.preload(FOAM_URL);
 /** Close enough to the track that the boat threads between them. */
 const OFFSETS = [9.8, -7.5, 7.6, -6.4, 7];
 
+/** A handful of distinct bodies, spread over the outcrops by turn and scale. */
+const SHAPES = [1, 18, 35, 52, 69];
+
 /** One outcrop plus the smaller stacks that broke off it. */
 const CLUSTER = [
   { x: 0, z: 0, scale: 1, sink: 0.28 },
@@ -37,7 +40,7 @@ const Outcrop = ({ index, routeT, offset }: OutcropProps) => {
     () =>
       CLUSTER.map((piece, i) => ({
         ...piece,
-        geometry: createRockGeometry(index * 13 + i * 5 + 1),
+        geometry: createRockGeometry(SHAPES[(index * CLUSTER.length + i) % SHAPES.length]),
         turn: seeded(index * 17 + i) * Math.PI * 2,
         lean: (seeded(index * 23 + i) - 0.5) * 0.3,
         size: 1.6 + seeded(index * 29 + i) * 0.9,

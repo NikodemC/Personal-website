@@ -78,36 +78,8 @@
 }
 
 .crew {
-  &__head {
-    margin-bottom: clamp(2rem, 5vh, 3.5rem);
-  }
-
-  &__quotes {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
-    gap: clamp(1.5rem, 4vw, 3rem);
-  }
-
-  &__quote {
-    margin: 0;
-    padding-left: 1.4rem;
-    border-left: 1px solid var(--color-glass-edge);
-
-    p {
-      font-family: var(--font-display);
-      font-size: 1.125rem;
-      line-height: 1.55;
-      color: var(--color-shallows);
-    }
-
-    footer {
-      font-size: var(--text-small);
-      color: var(--color-mist);
-    }
-  }
-
   &__motto {
-    margin: clamp(3rem, 8vh, 6rem) 0 0;
+    margin: 0;
     max-width: 34rem;
 
     blockquote {

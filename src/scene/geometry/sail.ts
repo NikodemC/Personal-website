@@ -1,6 +1,5 @@
-import type { BufferGeometry } from 'three';
-import { Vector3 } from 'three';
-import { buildSurface } from './surface';
+import { Color, Vector3, type BufferGeometry } from 'three';
+import { buildSurface, paintSurface } from './surface';
 
 interface SailOptions {
   /** Tack corner: bottom of the luff. */
@@ -16,6 +15,11 @@ interface SailOptions {
 }
 
 const LEEWARD = new Vector3(1, 0, 0);
+
+const CLOTH = new Color('#fbf8f0');
+const SEAM = new Color('#ddd6c6');
+const PATCH = new Color('#e4dcc8');
+const PANELS = 7;
 
 /**
  * A cambered triangular sail. `u` runs from tack to head along the luff,
@@ -34,7 +38,7 @@ export const createSailGeometry = ({
   const luffPoint = new Vector3();
   const chord = new Vector3();
 
-  return buildSurface(26, 22, (u, v, out) => {
+  const geometry = buildSurface(40, 30, (u, v, out) => {
     luffPoint.copy(tack).addScaledVector(luff, u);
     const roachBulge = roach * Math.sin(Math.PI * Math.pow(u, 0.85));
     chord
@@ -46,4 +50,27 @@ export const createSailGeometry = ({
     const belly = camber * Math.sin(Math.PI * v) * Math.sin(Math.PI * Math.pow(u, 0.7) * 0.92);
     out.addScaledVector(LEEWARD, belly);
   });
+
+  return paintSurface(
+    geometry,
+    (u, v, out) => {
+      out.copy(CLOTH);
+      /** Cross-cut panels: seams run from luff to leech, fanning slightly. */
+      const across = u + v * 0.16;
+      const strip = across * PANELS;
+      const seam = Math.abs(strip - Math.floor(strip) - 0.5) * 2;
+      out.lerp(SEAM, Math.pow(seam, 9) * 0.8);
+      /** Reinforcement patches where the corners take the load. */
+      const corner = Math.min(
+        1,
+        Math.max(
+          Math.max(0, 1 - Math.hypot(u, v) * 4.5),
+          Math.max(0, 1 - Math.hypot(u, 1 - v) * 4.5),
+          Math.max(0, 1 - Math.hypot(1 - u, v) * 4.5),
+        ),
+      );
+      out.lerp(PATCH, corner * 0.85);
+    },
+    new Color(),
+  );
 };
