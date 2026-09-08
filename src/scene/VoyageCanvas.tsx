@@ -35,7 +35,12 @@ export const VoyageCanvas = () => {
         }}
         camera={{ position: [9, 30, 34], fov: 62, near: 0.5, far: 900 }}
       >
-        <PerformanceMonitor onDecline={() => setDegraded(true)} />
+        <PerformanceMonitor
+          onDecline={() => setDegraded(true)}
+          onIncline={() => setDegraded(capabilities.lowPower)}
+          flipflops={3}
+          onFallback={() => setDegraded(true)}
+        />
         <AdaptiveDpr pixelated={false} />
         <Suspense fallback={null}>
           <VoyageDriver />
@@ -48,7 +53,7 @@ export const VoyageCanvas = () => {
           <Boat />
           {!degraded && <Wake />}
           <Rocks />
-          {!degraded && <Creatures />}
+          <Creatures />
           <Island />
           {!degraded && <Effects />}
         </Suspense>

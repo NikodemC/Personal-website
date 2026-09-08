@@ -1,7 +1,16 @@
 import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { CatmullRomCurve3, DoubleSide, type Group, MathUtils, TubeGeometry, Vector3 } from 'three';
 import {
+  CatmullRomCurve3,
+  DoubleSide,
+  type Group,
+  MathUtils,
+  type MeshStandardMaterial,
+  TubeGeometry,
+  Vector3,
+} from 'three';
+import {
+  createCabinAftGeometry,
   createCabinGeometry,
   createCockpitEndsGeometry,
   createCockpitGeometry,
@@ -9,14 +18,11 @@ import {
   createHullGeometry,
   createToeRailGeometry,
   createTransomGeometry,
-  stationSheer,
-  stationZ,
   WATERLINE_ACROSS,
 } from './geometry/hull';
 import {
   backstayTop,
   boomClew,
-  createRopeCoil,
   boomTack,
   bowFitting,
   forestayTop,
@@ -24,141 +30,17 @@ import {
   jibTack,
   mainHead,
   mastBase,
-  mastHead,
   RIG,
   sternFitting,
 } from './geometry/rig';
+import { createRailGeometry } from './geometry/rails';
 import { createSailGeometry } from './geometry/sail';
 import { sceneState } from './sceneState';
 import { waveHeight } from './waves';
 
-const HULL_LENGTH = 9.6;
-/** Right aft, behind the end of the boom, where a wheel actually goes. */
-const WHEEL_STATION = 0.15;
-const COMPANIONWAY_STATION = 0.4;
+import { CockpitFittings, NavigationLights } from './boat/Fittings';
+import { HULL_LENGTH, HULL_PAINT, ROPE, ROPE_THICKNESS, winchAt } from './boat/layout';
 
-const WHEEL_RADIUS = 0.46;
-const WINCH_STATION = 0.34;
-
-/** One rope colour for the whole boat. */
-const ROPE = '#c8c2b2';
-const ROPE_THICKNESS = 0.013;
-
-/** Where the sheets are cranked in, one winch each side of the cockpit. */
-const winchAt = (side: number) =>
-  new Vector3(side * 0.98, stationSheer(WINCH_STATION) + 0.2, stationZ(WINCH_STATION));
-
-const CockpitFittings = () => {
-  const coil = useMemo(() => createRopeCoil(), []);
-  const wheelZ = stationZ(WHEEL_STATION);
-  const rimY = stationSheer(WHEEL_STATION);
-
-  /** The rim has to clear the cockpit coaming, or the wheel sinks into the deck. */
-  const hubY = rimY + WHEEL_RADIUS + 0.16;
-  const pedestalTop = hubY - WHEEL_RADIUS * 0.55;
-  const pedestalFoot = rimY - 0.58;
-  const pedestalHeight = pedestalTop - pedestalFoot;
-
-  return (
-    <group>
-      <mesh position={[0, pedestalFoot + pedestalHeight / 2, wheelZ]}>
-        <cylinderGeometry args={[0.075, 0.13, pedestalHeight, 10]} />
-        <meshStandardMaterial color="#cfd5db" roughness={0.35} metalness={0.6} />
-      </mesh>
-
-      <group position={[0, hubY, wheelZ]} rotation={[0.14, 0, 0]}>
-        <mesh>
-          <torusGeometry args={[WHEEL_RADIUS, 0.028, 8, 32]} />
-          <meshStandardMaterial color="#b9a887" roughness={0.5} />
-        </mesh>
-        {[0, 1, 2, 3, 4].map((spoke) => (
-          <mesh key={spoke} rotation={[0, 0, (spoke * Math.PI) / 5]}>
-            <cylinderGeometry args={[0.016, 0.016, WHEEL_RADIUS * 2, 6]} />
-            <meshStandardMaterial color="#b9a887" roughness={0.5} />
-          </mesh>
-        ))}
-        <mesh rotation={[Math.PI / 2, 0, 0]}>
-          <cylinderGeometry args={[0.075, 0.075, 0.16, 12]} />
-          <meshStandardMaterial color="#cfd5db" roughness={0.35} metalness={0.6} />
-        </mesh>
-      </group>
-
-      {[-1, 1].map((side) => (
-        <group key={side}>
-          <mesh
-            position={[side * 0.98, stationSheer(WINCH_STATION) + 0.14, stationZ(WINCH_STATION)]}
-          >
-            <cylinderGeometry args={[0.11, 0.13, 0.24, 12]} />
-            <meshStandardMaterial color="#cfd5db" roughness={0.3} metalness={0.75} />
-          </mesh>
-          <mesh
-            geometry={coil}
-            position={[
-              side * 1.16,
-              stationSheer(WINCH_STATION) + 0.06,
-              stationZ(WINCH_STATION) - 0.38,
-            ]}
-            rotation={[0, side * 0.7, 0]}
-          >
-            <meshStandardMaterial color={ROPE} roughness={0.86} />
-          </mesh>
-        </group>
-      ))}
-
-      <mesh
-        position={[
-          0,
-          stationSheer(COMPANIONWAY_STATION) + 0.24,
-          stationZ(COMPANIONWAY_STATION) + 0.1,
-        ]}
-      >
-        <boxGeometry args={[0.72, 0.46, 0.1]} />
-        <meshStandardMaterial
-          color="#2a2018"
-          roughness={0.4}
-          emissive="#ffb45e"
-          emissiveIntensity={0.5}
-        />
-      </mesh>
-    </group>
-  );
-};
-
-/**
- * The bow faces local +Z, so an observer aboard has starboard at -X and port
- * at +X: green to starboard, red to port, white at the masthead and the stern.
- */
-const NavigationLights = () => (
-  <group>
-    <mesh position={[0.44, stationSheer(0.9) + 0.16, stationZ(0.9)]}>
-      <sphereGeometry args={[0.055, 8, 8]} />
-      <meshStandardMaterial color="#8c1f1f" emissive="#ff3a3a" emissiveIntensity={1.6} />
-    </mesh>
-    <mesh position={[-0.44, stationSheer(0.9) + 0.16, stationZ(0.9)]}>
-      <sphereGeometry args={[0.055, 8, 8]} />
-      <meshStandardMaterial color="#146b2c" emissive="#33e066" emissiveIntensity={1.6} />
-    </mesh>
-    <mesh position={[0, stationSheer(0.02) + 0.2, stationZ(0.02)]}>
-      <sphereGeometry args={[0.05, 8, 8]} />
-      <meshStandardMaterial color="#d8d2c2" emissive="#fff3d8" emissiveIntensity={1.2} />
-    </mesh>
-    <mesh position={[0, mastHead.y + 0.14, mastHead.z]}>
-      <sphereGeometry args={[0.075, 10, 10]} />
-      <meshStandardMaterial color="#e8e6df" emissive="#ffffff" emissiveIntensity={2.2} />
-    </mesh>
-    <pointLight
-      position={[0, mastHead.y + 0.14, mastHead.z]}
-      intensity={2.2}
-      distance={14}
-      color="#ffffff"
-    />
-  </group>
-);
-
-/**
- * Rigging as thin tubes rather than lines. A line material is unlit, so at dusk
- * the stays stayed bright while every rope beside them went dark.
- */
 const ropeGeometry = (from: Vector3, to: Vector3, sag = 0) => {
   const mid = new Vector3().addVectors(from, to).multiplyScalar(0.5);
   mid.y -= sag;
@@ -168,12 +50,15 @@ const ropeGeometry = (from: Vector3, to: Vector3, sag = 0) => {
 export const Boat = () => {
   const groupRef = useRef<Group>(null);
   const rockRef = useRef<Group>(null);
+  const clothRef = useRef<MeshStandardMaterial[]>([]);
 
   const geometries = useMemo(() => {
-    const topsides = createHullGeometry(WATERLINE_ACROSS, 1);
+    const topsides = createHullGeometry(WATERLINE_ACROSS, 1, 44);
     const bottom = createHullGeometry(0, WATERLINE_ACROSS + 0.012);
     const deck = createDeckGeometry();
     const cabin = createCabinGeometry();
+    const cabinAft = createCabinAftGeometry();
+    const rails = createRailGeometry();
     const mainsail = createSailGeometry({
       tack: boomTack,
       head: mainHead,
@@ -204,6 +89,8 @@ export const Boat = () => {
       bottom,
       deck,
       cabin,
+      cabinAft,
+      rails,
       cockpit,
       cockpitEnds,
       transom,
@@ -221,7 +108,19 @@ export const Boat = () => {
     const rock = rockRef.current;
     if (!group || !rock) return;
 
-    const { boatPos, boatYaw, time } = sceneState;
+    const { boatPos, boatYaw, time, palette } = sceneState;
+
+    /**
+     * Sailcloth passes light, so the shadow side is never black. Taking the
+     * fill from the sky rather than a fixed colour keeps the sails inside the
+     * scene instead of reading as grey slabs cut out of it.
+     */
+    for (const cloth of clothRef.current) {
+      if (!cloth) continue;
+      cloth.emissive.copy(palette.horizon);
+      cloth.emissiveIntensity = 0.1 + palette.lightGlow * 0.12;
+    }
+
     const sin = Math.sin(boatYaw);
     const cos = Math.cos(boatYaw);
     const half = HULL_LENGTH * 0.42;
@@ -246,24 +145,64 @@ export const Boat = () => {
       <group ref={rockRef}>
         <mesh geometry={geometries.topsides} castShadow>
           <meshStandardMaterial
-            color="#eeece4"
-            roughness={0.28}
-            metalness={0.04}
+            color={HULL_PAINT}
+            roughness={0.24}
+            metalness={0.05}
+            emissive="#e8e4d8"
+            emissiveIntensity={0.12}
             side={DoubleSide}
           />
         </mesh>
         <mesh geometry={geometries.bottom}>
-          <meshStandardMaterial color="#123049" roughness={0.55} side={DoubleSide} />
+          <meshStandardMaterial
+            color={HULL_PAINT}
+            roughness={0.24}
+            metalness={0.05}
+            emissive="#e8e4d8"
+            emissiveIntensity={0.12}
+            side={DoubleSide}
+          />
         </mesh>
         <mesh geometry={geometries.deck}>
-          <meshStandardMaterial color="#c9b190" roughness={0.72} side={DoubleSide} />
+          <meshStandardMaterial
+            vertexColors
+            roughness={0.68}
+            emissive="#b08b5c"
+            emissiveIntensity={0.1}
+            side={DoubleSide}
+          />
         </mesh>
         <mesh geometry={geometries.cabin}>
-          <meshStandardMaterial color="#e6e2d6" roughness={0.4} side={DoubleSide} />
+          <meshStandardMaterial
+            vertexColors
+            roughness={0.34}
+            emissive="#e6e2d6"
+            emissiveIntensity={0.12}
+            side={DoubleSide}
+          />
+        </mesh>
+        <mesh geometry={geometries.cabinAft}>
+          <meshStandardMaterial
+            vertexColors
+            roughness={0.34}
+            emissive="#e6e2d6"
+            emissiveIntensity={0.12}
+            side={DoubleSide}
+          />
+        </mesh>
+        <mesh geometry={geometries.rails}>
+          <meshStandardMaterial color="#c9ced4" roughness={0.3} metalness={0.65} />
         </mesh>
 
         <mesh geometry={geometries.transom}>
-          <meshStandardMaterial color="#eeece4" roughness={0.3} side={DoubleSide} />
+          <meshStandardMaterial
+            color={HULL_PAINT}
+            roughness={0.24}
+            metalness={0.05}
+            emissive="#e8e4d8"
+            emissiveIntensity={0.12}
+            side={DoubleSide}
+          />
         </mesh>
         <mesh geometry={geometries.cockpit}>
           <meshStandardMaterial color="#8f7c60" roughness={0.82} side={DoubleSide} />
@@ -289,14 +228,24 @@ export const Boat = () => {
 
         <mesh geometry={geometries.mainsail}>
           <meshStandardMaterial
-            color="#fbf8f0"
+            ref={(material: MeshStandardMaterial) => {
+              clothRef.current[0] = material;
+            }}
+            vertexColors
             roughness={0.92}
             side={DoubleSide}
             flatShading={false}
           />
         </mesh>
         <mesh geometry={geometries.jib}>
-          <meshStandardMaterial color="#f6f2e6" roughness={0.92} side={DoubleSide} />
+          <meshStandardMaterial
+            ref={(material: MeshStandardMaterial) => {
+              clothRef.current[1] = material;
+            }}
+            vertexColors
+            roughness={0.92}
+            side={DoubleSide}
+          />
         </mesh>
 
         <mesh geometry={geometries.forestay}>

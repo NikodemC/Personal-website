@@ -1,10 +1,13 @@
 import { BufferAttribute, Color, IcosahedronGeometry, Vector3, type BufferGeometry } from 'three';
-import { toCreasedNormals } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import { mergeVertices, toCreasedNormals } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { seeded } from '../random';
 
+/** Integer bit mix. A sin-based hash is an order of magnitude slower per call. */
 const hash = (x: number, y: number, z: number): number => {
-  const value = Math.sin(x * 127.1 + y * 311.7 + z * 74.7) * 43758.5453;
-  return value - Math.floor(value);
+  let h =
+    (Math.imul(x | 0, 374761393) + Math.imul(y | 0, 668265263) + Math.imul(z | 0, 1442695041)) | 0;
+  h = Math.imul(h ^ (h >>> 13), 1274126177);
+  return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
 };
 
 const fade = (t: number): number => t * t * (3 - 2 * t);
@@ -73,8 +76,15 @@ const LICHEN = new Color('#6d7059');
  * A sea stack: fractal relief for the mass, plane cuts for the fracture faces,
  * fine grain to keep the flats from reading as facets of a low-poly ball.
  */
-export const createRockGeometry = (seed: number, detail = 4): BufferGeometry => {
-  const geometry = new IcosahedronGeometry(1, detail);
+const cache = new Map<string, BufferGeometry>();
+
+export const createRockGeometry = (seed: number, detail = 3): BufferGeometry => {
+  const key = `${seed}:${detail}`;
+  const hit = cache.get(key);
+  if (hit) return hit;
+
+  /** The icosahedron ships non-indexed, so welding first cuts the noise work sixfold. */
+  const geometry = mergeVertices(new IcosahedronGeometry(1, detail));
   const position = geometry.getAttribute('position');
   const facets = facetsFor(seed);
   const squash = 0.78 + seeded(seed * 11.3) * 0.24;
@@ -110,7 +120,7 @@ export const createRockGeometry = (seed: number, detail = 4): BufferGeometry => 
 
     position.setXYZ(i, point.x, point.y, point.z);
 
-    const mottle = fbm(point.x * 2.7 - seed, point.y * 2.7, point.z * 2.7, 3) * 0.5 + 0.5;
+    const mottle = relief * 0.5 + 0.5;
     const dryness = Math.min(1, Math.max(0, (point.y + 0.25) / 0.7));
     tint
       .copy(WET)
@@ -127,5 +137,7 @@ export const createRockGeometry = (seed: number, detail = 4): BufferGeometry => 
   position.needsUpdate = true;
   geometry.computeVertexNormals();
 
-  return toCreasedNormals(geometry, 0.7);
+  const creased = toCreasedNormals(geometry, 0.7);
+  cache.set(key, creased);
+  return creased;
 };

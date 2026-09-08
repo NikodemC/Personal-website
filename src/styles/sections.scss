@@ -499,13 +499,17 @@
 
     img {
       width: 100%;
+      /** Trimmed off the top, so the rigging above the head does not dominate. */
+      aspect-ratio: 7 / 9;
+      object-fit: cover;
+      object-position: 50% 85%;
       filter: saturate(0.94) contrast(1.03);
       /**
-       * An ellipse inscribed in the frame: the radii stop at the nearest edge,
-       * so the fade genuinely reaches zero and the corners disappear.
+       * An ellipse inscribed in the frame. Centre and radii both at 50%, or the
+       * gradient runs past an edge and gets clipped into a hard line there.
        */
       -webkit-mask-image: radial-gradient(
-        50% 48% at 50% 46%,
+        50% 50% at 50% 50%,
         #000 0%,
         #000 58%,
         rgba(0, 0, 0, 0.74) 74%,
@@ -514,7 +518,7 @@
         transparent 100%
       );
       mask-image: radial-gradient(
-        50% 48% at 50% 46%,
+        50% 50% at 50% 50%,
         #000 0%,
         #000 58%,
         rgba(0, 0, 0, 0.74) 74%,

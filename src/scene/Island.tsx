@@ -3,24 +3,25 @@ import { useFrame } from '@react-three/fiber';
 import { AdditiveBlending, Color, DoubleSide, type Group, type ShaderMaterial } from 'three';
 import { Beach } from './Beach';
 import { createIslandGeometry, ISLAND, shorePoint } from './geometry/island';
-import {
-  createPalmFrond,
-  createPalmTrunk,
-  palmCurve,
-  PALMS,
-  type PlantedPalm,
-} from './geometry/palm';
+import { CROWNS, createPalmTrunk, palmCurve, PALMS, type PlantedPalm } from './geometry/palm';
 import { HARBOR_CENTER } from './route';
+import { Undergrowth } from './Undergrowth';
 import { sceneState, smoothstep } from './sceneState';
 import { gerstnerGlsl, waveUniforms } from './waves';
-import { seeded } from './random';
 
-const Palm = ({ shape }: { shape: PlantedPalm }) => {
+/** Four nuts tucked under the crown, rather than one ball on the shaft. */
+const NUTS = [
+  { x: 0.34, y: -0.28, z: 0.12, r: 0.3 },
+  { x: -0.18, y: -0.36, z: 0.3, r: 0.27 },
+  { x: -0.3, y: -0.24, z: -0.22, r: 0.29 },
+  { x: 0.12, y: -0.46, z: -0.3, r: 0.24 },
+];
+
+const Palm = ({ shape, index }: { shape: PlantedPalm; index: number }) => {
   const parts = useMemo(() => {
     const trunk = createPalmTrunk(shape);
-    const frond = createPalmFrond(shape.frondLength);
     const crown = palmCurve(shape).getPoint(1);
-    return { trunk, frond, crown };
+    return { trunk, crown };
   }, [shape]);
 
   const [x, y, z] = shorePoint(shape.angle, shape.inset);
@@ -28,22 +29,22 @@ const Palm = ({ shape }: { shape: PlantedPalm }) => {
   return (
     <group position={[x, y, z]}>
       <mesh geometry={parts.trunk}>
-        <meshStandardMaterial color="#8a6f52" roughness={0.92} side={DoubleSide} />
+        <meshStandardMaterial vertexColors roughness={0.95} />
       </mesh>
       <group position={parts.crown}>
-        {Array.from({ length: shape.frondCount }, (_, i) => {
-          const spin = (i / shape.frondCount) * Math.PI * 2;
-          const pitch = 0.42 + seeded(i + shape.height) * 0.5;
-          return (
-            <mesh key={i} geometry={parts.frond} rotation={[0, spin, pitch]}>
-              <meshStandardMaterial color="#4d7a41" roughness={0.86} side={DoubleSide} />
-            </mesh>
-          );
-        })}
-        <mesh position={[0, -0.35, 0]}>
-          <sphereGeometry args={[0.42, 10, 8]} />
-          <meshStandardMaterial color="#6f5c3f" roughness={0.9} />
+        <mesh
+          geometry={CROWNS[index % CROWNS.length]}
+          scale={shape.frondLength}
+          rotation={[0, index * 1.7, 0]}
+        >
+          <meshStandardMaterial vertexColors roughness={0.72} side={DoubleSide} />
         </mesh>
+        {NUTS.map((nut, i) => (
+          <mesh key={i} position={[nut.x, nut.y, nut.z]}>
+            <sphereGeometry args={[nut.r, 10, 8]} />
+            <meshStandardMaterial color="#6b5334" roughness={0.88} />
+          </mesh>
+        ))}
       </group>
     </group>
   );
@@ -146,8 +147,9 @@ export const Island = () => {
       <mesh geometry={landGeometry} receiveShadow>
         <meshStandardMaterial vertexColors roughness={0.95} side={DoubleSide} />
       </mesh>
+      <Undergrowth />
       {PALMS.map((shape, index) => (
-        <Palm key={index} shape={shape} />
+        <Palm key={index} shape={shape} index={index} />
       ))}
       <Beach />
     </group>

@@ -1,4 +1,4 @@
-import { BufferAttribute, BufferGeometry, Vector3 } from 'three';
+import { BufferAttribute, BufferGeometry, type Color, Vector3 } from 'three';
 
 export type SurfacePoint = (u: number, v: number, out: Vector3) => void;
 
@@ -56,22 +56,26 @@ export const buildSurface = (
   return geometry;
 };
 
-export const mergeMirrored = (geometry: BufferGeometry): BufferGeometry => {
-  const mirrored = geometry.clone();
-  const position = mirrored.getAttribute('position') as BufferAttribute;
-  for (let i = 0; i < position.count; i += 1) {
-    position.setX(i, -position.getX(i));
+/**
+ * Writes a colour attribute using the surface parameters the geometry was built
+ * from, which buildSurface already stores as uvs. Saves recovering u and v from
+ * world position, which is ambiguous on a shell folded across both sides.
+ */
+export const paintSurface = (
+  geometry: BufferGeometry,
+  paint: (u: number, v: number, out: Color) => void,
+  out: Color,
+): BufferGeometry => {
+  const uv = geometry.getAttribute('uv');
+  const colours = new Float32Array(uv.count * 3);
+
+  for (let i = 0; i < uv.count; i += 1) {
+    paint(uv.getX(i), uv.getY(i), out);
+    colours[i * 3] = out.r;
+    colours[i * 3 + 1] = out.g;
+    colours[i * 3 + 2] = out.b;
   }
-  const index = mirrored.getIndex();
-  if (index) {
-    const array = index.array as Uint16Array | Uint32Array;
-    for (let i = 0; i < array.length; i += 3) {
-      const tmp = array[i + 1];
-      array[i + 1] = array[i + 2];
-      array[i + 2] = tmp;
-    }
-    index.needsUpdate = true;
-  }
-  mirrored.computeVertexNormals();
-  return mirrored;
+
+  geometry.setAttribute('color', new BufferAttribute(colours, 3));
+  return geometry;
 };

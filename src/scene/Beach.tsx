@@ -38,7 +38,7 @@ const CHEST = {
   depth: 3.1,
   lidRadius: 1.55,
   bearing: 1.08,
-  inset: 0.76,
+  inset: 0.65,
 };
 
 /** Heaped: thickest in the middle, spilling toward the corners. */
@@ -287,7 +287,7 @@ const TreasureChest = () => {
 };
 
 /** A small fire on the sand, just down the beach from the chest. */
-const FIRE = { bearing: 0.97, inset: 0.78 };
+const FIRE = { bearing: 0.97, inset: 0.66 };
 
 const STONES = Array.from({ length: 9 }, (_, i) => {
   const angle = (i / 9) * Math.PI * 2 + seeded(i + 149) * 0.3;

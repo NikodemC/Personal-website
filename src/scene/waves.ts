@@ -8,7 +8,7 @@ interface Wave {
 
 const GRAVITY = 9.81;
 
-export const WAVES: Wave[] = [
+const WAVES: Wave[] = [
   { dir: [1, 0.6], steepness: 0.18, wavelength: 30 },
   { dir: [-0.7, 1], steepness: 0.13, wavelength: 15 },
   { dir: [0.3, -1], steepness: 0.09, wavelength: 7 },
